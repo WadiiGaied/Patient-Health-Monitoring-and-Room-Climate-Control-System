@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/LOGIN">
+        <file>back_ground_login.jpg</file>
+        <file>logo_csf.png</file>
+        <file>logo_issig.png</file>
+        <file>logo_username.png</file>
+        <file>password.png</file>
+        <file>logo_back.jpg</file>
+        <file>logo_cardiaque.jpg</file>
+        <file>logo_button.jpg</file>
+        <file>logo_humidite.png</file>
+        <file>logo_temperature.jpg</file>
+        <file>logo_ventilateur.jpg</file>
+        <file>temp_humaine.png</file>
+        <file>chambre.jpg</file>
+        <file>logo_Accueil.png</file>
+        <file>accueil.jpg</file>
+        <file>logo_cloud.jpg</file>
+        <file>logo_quitter.png</file>
+        <file>sortie.jpg</file>
+        <file>produit-removebg-preview.png</file>
+        <file>logo_connect.png</file>
+        <file>medicen.jpg</file>
+    </qresource>
+    <qresource prefix="/test"/>
+</RCC>
