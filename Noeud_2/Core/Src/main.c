@@ -32,8 +32,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define   DOMINANT    0 // kin donne(RTR) il jatni mil can data
-#define   RECESSIF    1 // kin donne(RTR) il jatni mil can remote
+#define   DOMINANT    0
+#define   RECESSIF    1
 
 /* USER CODE END PD */
 
@@ -51,21 +51,20 @@ DMA_HandleTypeDef hdma_tim1_ch1;
 
 /* USER CODE BEGIN PV */
 //////////////DHT11/////////////
-uint8_t TempByte1,TempByte2,HumByte1,HumByte2;// varible hathoma tb3in dht11 fil chrongramme mt3w ya9ra mara humdiyte w mara temperateur
+uint8_t TempByte1,TempByte2,HumByte1,HumByte2;
 uint16_t Sum;
-uint8_t Temperature = 0; // variable bich nhot fih valeur mt3 temperature
-uint8_t Humidity = 0;// variable bich nhot fih valeur mt3 Humidity
-uint8_t Presence = 0 ; // variable bich nchouf bih il capteur 9a3id communique m3a microcontrolleur wila lee
+uint8_t Temperature = 0;
+uint8_t Humidity = 0;
+uint8_t Presence = 0 ;
 ////////////////fan////////////////////////
-uint8_t PwmData = 0 ; // variable bich nthakim fil vitesse mt3 ventilateur
+int PwmData = 0 ;
 ///////////////CAN/////////////////////////
-uint8_t VitesseFan;
 uint32_t TxMailbox;
 CAN_TxHeaderTypeDef TxHeader;
-uint8_t aTxData[6] ; // tableau bich nb3th fih tout les valeur du capteurs mt3 carte hathiy
-uint8_t aRxData[2] ; // tableau bich nhot fih data ily jayitniy mil autre carte
-uint8_t Flag = 0; // varible bich ntastiy bih can 9a3id yba3th wila lee wile bich nchouf data thtiyt w fil mailbox w tb3thiyt wila lee
-uint8_t EtatFan = 0 ; // varible bich nchouf bih etatfan t5dim wila lee
+uint8_t aTxData[6] ;
+uint8_t aRxData[2] ;
+uint8_t CanFlag = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,18 +76,18 @@ static void MX_TIM6_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 ////////////DHT11/////////////////
- static void Micro_Delay(uint16_t time); // fonction hathiya tb3a dht11 ,dht11 y5dem bil micro seconnde w stm32 fiha kin  mille seconde ak3liha michina 3amla fonction o5ra kona njmouw nbdlouw fil hal_delay mt3 stm 5ater 3atihana weak ama bilk nstha9ouha aki3alih 3amla fonction sipare
- static void Set_Pin_output(GPIO_TypeDef *GPIOx,uint16_t GPIO_Pin);
+ static void Micro_Delay(uint16_t time);
+ static void Set_Pin_Output(GPIO_TypeDef *GPIOx,uint16_t GPIO_Pin);
  static void Set_Pin_Input(GPIO_TypeDef *GPIOx,uint16_t GPIO_Pin);
  static void Dht11_Start (void);
  static uint8_t Check_Response (void);
  static uint8_t Dht11_Read (void);
  static void Dht11_Fct(void);
  ///////////////FAN/////////////////////
- static void Fan_Fct(void); // fonction hathiy bich n5adem biha ventilateur
+ static void Fan_Fct(void);
  ////////////////CAN////////////
- static void CAN1_Filter(void); // fonction hathiy 3andiy barcha des carte o5rin 9a3din yab3thouw w ana nhib n5ouw kin data mil carte"x" n9oul i9bil kin les id mt3 carte"X"
- static void CAN1_Tx(void);// fonction hathiy bich nb3th data ( les valeur mt3 les capteur) fiy tableau b id mo3ain n5tarouw ana
+ static void CAN1_Filter(void);
+ static void CAN1_Tx(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -131,19 +130,19 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   CAN1_Filter();
-  if(HAL_TIM_Base_Start(&htim6)!=HAL_OK) // bich ntastiy tim6 y5dim wila lee
+  if(HAL_TIM_Base_Start(&htim6)!=HAL_OK)
   {
    	Error_Handler();
   }
 
-  HAL_GPIO_WritePin(FAN_S1_GPIO_Port, FAN_S1_Pin, GPIO_PIN_SET);   //// deux etap hathom bich nhot sans mt3 ventilateur fil pont h  IN1,IN2
-  HAL_GPIO_WritePin(FAN_S1_GPIO_Port, FAN_S2_Pin , GPIO_PIN_RESET);////
+  HAL_GPIO_WritePin(FAN_S1_GPIO_Port, FAN_S1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(FAN_S1_GPIO_Port, FAN_S2_Pin , GPIO_PIN_RESET);
 
-  if(HAL_TIM_PWM_Start_DMA(&htim1,TIM_CHANNEL_1,(uint32_t *) &PwmData,1)!= HAL_OK){ /// bich ntastiy tim1 y5dem wila lee
-
+  if(HAL_TIM_PWM_Start_DMA(&htim1,TIM_CHANNEL_1,(uint32_t *) &PwmData,1)!= HAL_OK)
+  {
 	  Error_Handler();
   }
-  if (HAL_CAN_Start(&hcan1) !=HAL_OK) // bich nchouf can y5dem wila lee
+  if (HAL_CAN_Start(&hcan1) !=HAL_OK)
   {
 	  Error_Handler();
   }
@@ -165,26 +164,26 @@ int main(void)
 	   Fan_Fct();
 	   CAN1_Tx();
 
-		  if( 1 == Flag )
+		  if( 1 == CanFlag )
 		  {
 			  HAL_GPIO_WritePin(GREEN_GPIO_Port, GREEN_Pin , GPIO_PIN_SET);
 			  HAL_Delay(1000);
 			  HAL_GPIO_WritePin(GREEN_GPIO_Port, GREEN_Pin , GPIO_PIN_RESET);
-			  Flag = 0;
+			  CanFlag = 0;
 		  }
-		  else if ( 2 == Flag )
+		  else if ( 2 == CanFlag )
 		  {
 			  HAL_GPIO_WritePin(RED_GPIO_Port, RED_Pin , GPIO_PIN_SET);
 			  HAL_Delay(1000);
 			  HAL_GPIO_WritePin(RED_GPIO_Port, RED_Pin   , GPIO_PIN_RESET);
-			  Flag = 0;
+			  CanFlag = 0;
 		  }
-		  else if ( 3 == Flag )
+		  else if ( 3 == CanFlag )
 		  {
 			  HAL_GPIO_WritePin(BLUE_GPIO_Port, BLUE_Pin , GPIO_PIN_SET);
 			  HAL_Delay(1000);
 			  HAL_GPIO_WritePin(BLUE_GPIO_Port, BLUE_Pin   , GPIO_PIN_RESET);
-			  Flag = 0;
+			  CanFlag = 0;
 		  }
       HAL_Delay(50);
   }
@@ -449,7 +448,7 @@ static void Micro_Delay(uint16_t time){
 	  __HAL_TIM_SET_COUNTER(&htim6, 0);
 	  while (__HAL_TIM_GET_COUNTER(&htim6) < time);
 }
-static void Set_Pin_output(GPIO_TypeDef *GPIOx,uint16_t GPIO_Pin)
+static void Set_Pin_Output(GPIO_TypeDef *GPIOx,uint16_t GPIO_Pin)
 {
 GPIO_InitTypeDef GPIO_InitStruct = {0};
 GPIO_InitStruct.Pin = GPIO_Pin;
@@ -470,7 +469,7 @@ HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
 }
 static void Dht11_Start (void)
 {
-	Set_Pin_output(  DHT11_GPIO_Port, DHT11_Pin );
+	Set_Pin_Output(  DHT11_GPIO_Port, DHT11_Pin );
 	HAL_GPIO_WritePin( DHT11_GPIO_Port, DHT11_Pin, 1 );   // pull the pin high
 	HAL_Delay(1000);
 	HAL_GPIO_WritePin( DHT11_GPIO_Port, DHT11_Pin, 0 );   // pull the pin low
@@ -537,27 +536,20 @@ static void Fan_Fct(void)
 
 	   if (30 < Temperature && 1 == aRxData[0])
 	  {
-	  HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin , GPIO_PIN_SET);
-	  PwmData = 60;
+	    HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin , GPIO_PIN_SET);
+	    PwmData = 60;
 	  }
 	  else if (30 >= Temperature && 1 == aRxData[0] )
 	  {
-	  HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin , GPIO_PIN_SET);
-	  PwmData = 30;
+	    HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin , GPIO_PIN_SET);
+	    PwmData = 30;
 	  }
 	  else if (0 == aRxData[0])
 	  {
 	   HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin , GPIO_PIN_RESET);
-	   PwmData =aRxData[1];
+	   PwmData = aRxData[1];
 	  }
-	/*if (1 == EtatFan){
-		 HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin , GPIO_PIN_SET);
-		PwmData = 100;
-	}
-	else if (0 == EtatFan){
-		 HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin , GPIO_PIN_RESET);
-		PwmData = 0;
-	}*/
+
 }
 
 static void CAN1_Tx(void)
@@ -565,7 +557,7 @@ static void CAN1_Tx(void)
 
 	aTxData[3]=Temperature;
 	aTxData[4]=Humidity;
-	aTxData[5]=EtatFan;
+	aTxData[5]=aRxData[0];
 
     if (30 < aTxData[3])
     {
@@ -614,7 +606,7 @@ void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
  {
 		if (hcan->Instance== CAN1)
 		{
-			Flag=1;
+			CanFlag = 1;
 	    }
 
 
@@ -624,7 +616,7 @@ void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
  {
 		if (hcan->Instance== CAN1)
 		{
-			Flag=1;
+			CanFlag = 1;
 	    }
 
  }
@@ -633,7 +625,7 @@ void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan)
  {
 		if (hcan->Instance== CAN1)
 		{
-			Flag=1;
+			CanFlag = 1;
 	    }
 
  }
@@ -641,18 +633,18 @@ void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan)
 
  void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
  {
- if (hcan->Instance== CAN1)
-	{
-	 CAN1_Rx();
-	 Flag=3;
-	}
+        if (hcan->Instance== CAN1)
+	      {
+	          CAN1_Rx();
+	          CanFlag = 3;
+	      }
  }
 
  void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
  {
 		if (hcan->Instance== CAN1)
 		{
-			Flag=2;
+			CanFlag = 2;
 	    }
 
 

@@ -53,16 +53,16 @@ DMA_HandleTypeDef hdma_i2c1_rx;
 TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN PV */
-uint8_t i2cdata[2];
-uint8_t Temperature = 0  ; // variable bich nhot fih valeur mt3 temperateur
+uint8_t I2cData[2];
+uint8_t Temperature = 0  ;
 int RawTemp = 0 ;
-uint8_t J = 0 ; // conture bich n3rif bih jet intterption mil button
-uint8_t EtatButton = 0 ; // variable bich na3rif bih etat mt3 button
+uint8_t ButtonFlag = 0 ;
+uint8_t EtatButton = 0 ;
 uint8_t AdcConvertCpltFlag = 0 ;
 uint8_t AdcValue = 0;
 ////////////CAN///////////////
-uint8_t aTxData[3]; // buffer bich nb3thouw il central fih etat mt3button w valeur mt3 temperateur
-uint8_t Flag = 0 ; //  variable bich n3rif bih  ntastiy kin can y5dem wila lee wila 9a3id yab3th wila lee
+uint8_t aTxData[3];
+uint8_t CanFlag = 0 ;
 uint32_t TxMailbox;
 CAN_TxHeaderTypeDef TxHeader;
 /* USER CODE END PV */
@@ -76,8 +76,8 @@ static void MX_CAN1_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
-static uint8_t Read_Temperature(void);// fonction qui return le valeur de temperture humaine
-static void CAN1_Tx(void) ; // fonction de transmision de data a la  carte centre a traver des ID
+static uint8_t Read_Temperature(void);
+static void CAN1_Tx(void) ;
 static void Button_Urgence(void);
 static uint8_t Rythem_Cardique(void);
 /* USER CODE END PFP */
@@ -121,11 +121,11 @@ int main(void)
   MX_TIM6_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
- if(HAL_I2C_IsDeviceReady(&hi2c1,0xB5,1,100)!=HAL_OK)// teste bich nthabirt inw fama commuincation bin capteur de periphe i2c
+ if(HAL_I2C_IsDeviceReady(&hi2c1,0xB5,1,100)!=HAL_OK)
  {
   	Error_Handler();
  }
- if (HAL_CAN_Start(&hcan1) !=HAL_OK) // test bich nchouf kin fama comunication bin transiver wil priphe CAN
+ if (HAL_CAN_Start(&hcan1) !=HAL_OK)
  {
 	  Error_Handler();
  }
@@ -152,19 +152,19 @@ int main(void)
 	  Read_Temperature();
 	  CAN1_Tx();
 
-	  if( 1 == Flag )
+	  if( 1 == CanFlag )
 	  {
 		  HAL_GPIO_WritePin( GREEN_GPIO_Port, GREEN_Pin , GPIO_PIN_SET);
 		  HAL_Delay(1000);
 		  HAL_GPIO_WritePin( GREEN_GPIO_Port,  GREEN_Pin , GPIO_PIN_RESET);
-		  Flag = 0;
+		  CanFlag = 0;
 	  }
-	  else if ( 2 == Flag )
+	  else if ( 2 == CanFlag )
 	  {
 		  HAL_GPIO_WritePin(RED_GPIO_Port, RED_Pin , GPIO_PIN_SET);
 		  HAL_Delay(1000);
 		  HAL_GPIO_WritePin(RED_GPIO_Port, RED_Pin   , GPIO_PIN_RESET);
-		  Flag = 0;
+		  CanFlag = 0;
 	  }
 
 
@@ -451,18 +451,18 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 static uint8_t Rythem_Cardique(void){
 	if( 1 == AdcConvertCpltFlag  )
 	{
-		AdcValue = HAL_ADC_GetValue( &hadc1 )/8.5;
+	  AdcValue = HAL_ADC_GetValue( &hadc1 )/8;
 	  if( HAL_ADC_Stop_IT( &hadc1 ) != HAL_OK )
 	  {
 		  Error_Handler();
 	  }
-
-	    AdcConvertCpltFlag = 0 ;
-		  if ( HAL_ADC_Start_IT( &hadc1 ) != HAL_OK )
-		  {
-			  Error_Handler();
-		  }
+      AdcConvertCpltFlag = 0 ;
+	  if ( HAL_ADC_Start_IT( &hadc1 ) != HAL_OK )
+	  {
+		  Error_Handler();
 	  }
+
+	}
 	return AdcValue ;
 }
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -473,34 +473,35 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
 }
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{  if(GPIO_Pin == BUTTON_Pin)
- {
-	  J++ ;
+{
+	if(GPIO_Pin == BUTTON_Pin)
+     {
+	  ButtonFlag++ ;
 	  Button_Urgence();
-  }
+     }
 
 }
 static void Button_Urgence(void)
 {
-      if (1 == J)
+      if (1 == ButtonFlag)
 	  {
 	   EtatButton = 1 ;
 	   HAL_TIM_Base_Start_IT(&htim6);
 	  }
-      else if (2 == J)
+      else if (2 == ButtonFlag)
 	  {
       HAL_TIM_Base_Stop_IT(&htim6);
 	  HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
-	  J=0;
+	  ButtonFlag = 0;
 	  EtatButton = 0 ;
 	  }
 }
 static uint8_t Read_Temperature(void) {
-   HAL_I2C_Mem_Read_DMA(&hi2c1 , 0xB4 , 0x07 , 1 , (uint8_t*) i2cdata , 2);
-   RawTemp = ((i2cdata[1] << 8) | (i2cdata[0]));
+   HAL_I2C_Mem_Read_DMA(&hi2c1 , 0xB4 , 0x07 , 1 , (uint8_t*) I2cData , 2);
+   RawTemp = ((I2cData[1] << 8) | (I2cData[0]));
    Temperature = round(RawTemp * 0.02 - 273.15);
    HAL_Delay(100);
- return Temperature; // Return a valuer De temperature
+ return Temperature;
 }
 
 static void CAN1_Tx(void)
@@ -538,7 +539,7 @@ void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
 {
 	if (hcan->Instance== CAN1)
 	{
-		Flag=1;
+		CanFlag=1;
     }
 
 
@@ -548,7 +549,7 @@ void HAL_CAN_TxMailbox1CompleteCallback(CAN_HandleTypeDef *hcan)
 {
 	if (hcan->Instance== CAN1)
 	{
-		Flag=1;
+		CanFlag=1;
     }
 
 }
@@ -557,7 +558,7 @@ void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan)
 {
 	if (hcan->Instance== CAN1)
 	{
-		Flag=1;
+		CanFlag=1;
     }
 
 }
@@ -566,7 +567,7 @@ void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
 {
 	if (hcan->Instance== CAN1)
 	{
-		Flag=2;
+		CanFlag=2;
     }
 
 

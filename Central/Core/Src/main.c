@@ -49,11 +49,11 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
- uint8_t aRxData[6];
- uint16_t aRxDataT[5];
- uint8_t aRxDatac[5];
+ uint8_t aRxDataCan[6];
+ uint16_t aRxDataCanCloud[5];
+ uint8_t aRxDataCanQT[5];
  uint8_t EtatFan = 0 ;
- uint8_t Flag = 0 ;
+ uint8_t CanFlag = 0 ;
  uint8_t QtRxData[2];
  uint8_t aTxData[2];
  //////////paramétres CAN/////////
@@ -72,7 +72,7 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 static void CAN1_Filter(void);
 static void CAN1_Tx(void);
-static void send_data_uart(uint8_t *data, uint8_t size);
+static void Send_Data_Uart(uint8_t *data, uint8_t size);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -122,7 +122,10 @@ int main(void)
     Error_Handler();
   }
 
- HAL_UART_Receive_IT(&huart2, QtRxData, sizeof(QtRxData));
+  if ( HAL_UART_Receive_IT(&huart2, QtRxData, sizeof(QtRxData)) != HAL_OK )
+  {
+	 Error_Handler();
+  }
  ESP_Init("Redmi","09876543210X");
   /* USER CODE END 2 */
 
@@ -134,53 +137,26 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  if ( 1 == Flag )
+	  if ( 1 == CanFlag )
 	    {
 		      HAL_GPIO_TogglePin(GREEN_GPIO_Port, GREEN_Pin);
-              Flag = 0;
+		      CanFlag = 0;
 
          }
-	  else if ( 2 == Flag )
+	  else if ( 2 == CanFlag )
 		  {
 			  HAL_GPIO_TogglePin(RED_GPIO_Port, RED_Pin);
-			  Flag = 0;
+			  CanFlag = 0;
 		  }
-	  else if ( 3 == Flag )
+	  else if ( 3 == CanFlag )
 		  {
 			  HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
-			  send_data_uart(aRxDatac, sizeof(aRxDatac));
-              ESP_Send_Multi("Q2II80D9IDVPRW74",5,aRxDataT);
+			  Send_Data_Uart(aRxDataCanQT, sizeof(aRxDataCanQT));
+              ESP_Send_Multi("Q2II80D9IDVPRW74",5,aRxDataCanCloud);
 		      HAL_Delay(1000);
-              Flag = 0;
+		      CanFlag = 0;
 		  }
-	 /* if ( 1 == FlagQtVentilateur )
-	  {
-		  HAL_UART_Receive_IT(&huart2, QtRxData, sizeof(QtRxData));
-		  CAN1_Tx();
-		  FlagQtVentilateur = 0 ;
-	       if(QtRxData[0] == 1)
-	    {
-	      EtatFan = 1 ;
-	      CAN1_Tx();
-	      FlagQtVentilateur = 0 ;
-	      HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin, GPIO_PIN_SET); // Turn on LED
-        }
-	    else if(QtRxData[0] == 0)
-	    {
-	      EtatFan = 0 ;
-	      HAL_GPIO_WritePin(ORANGE_GPIO_Port, ORANGE_Pin, GPIO_PIN_RESET); // Turn off LED
-	      CAN1_Tx();
-          FlagQtVentilateur = 0 ;
-	    }
-	    else
-	    {
-	    	FlagQtVentilateur = 0 ;
-	    }
 
-	  }*/
-
-
-    //  HAL_Delay(50);
   }
   /* USER CODE END 3 */
 }
@@ -385,7 +361,7 @@ static void CAN1_Filter(void)
  static void CAN1_Rx(void)
  {
 
- 	if(HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, aRxData) != HAL_OK)
+ 	if(HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, aRxDataCan) != HAL_OK)
  	{
  		Error_Handler();
  	}
@@ -421,23 +397,23 @@ static void CAN1_Filter(void)
  	*/
  	if (RxHeader.StdId == 0x0FF || RxHeader.StdId == 0x1FF || RxHeader.StdId == 0x3FF ){
  		for(int i = 0; i < 3; i++) {
- 			aRxDatac[i] = aRxData[i];
- 			aRxDataT[i] = aRxData[i];
+ 			aRxDataCanQT[i] = aRxDataCan[i];
+ 			aRxDataCanCloud[i] = aRxDataCan[i];
  		}
  	}
  	else if (RxHeader.StdId == 0x2FF || RxHeader.StdId == 0x4FF ){
  		for(int i = 0; i < 2; i++) {
- 			aRxDatac[i+3] = aRxData[i+3];
- 			aRxDataT[i+3] = aRxData[i+3];
+ 			aRxDataCanQT[i+3] = aRxDataCan[i+3];
+ 			aRxDataCanCloud[i+3] = aRxDataCan[i+3];
  		}
  	}
  }
  }
  void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
   {
- 		if (hcan->Instance== CAN1)
+ 		if (hcan->Instance == CAN1)
  		{
- 			Flag=1;
+ 			CanFlag = 1;
  	    }
 
 
@@ -447,7 +423,7 @@ static void CAN1_Filter(void)
   {
  		if (hcan->Instance== CAN1)
  		{
- 			Flag=1;
+ 			CanFlag = 1;
  	    }
 
   }
@@ -456,7 +432,7 @@ static void CAN1_Filter(void)
   {
  		if (hcan->Instance== CAN1)
  		{
- 			Flag=1;
+ 			CanFlag = 1;
  	    }
 
   }
@@ -466,7 +442,7 @@ static void CAN1_Filter(void)
 	 if (hcan->Instance== CAN1)
 	{
 		 CAN1_Rx();
-	     Flag=3;
+		 CanFlag = 3;
 	}
 
  }
@@ -474,7 +450,7 @@ void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
 {
   if (hcan->Instance== CAN1)
 	{
-	 	 Flag=2;
+	  CanFlag = 2;
 	}
 
  }
@@ -483,17 +459,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	if(huart->Instance == USART2)
 	  {
 
-		  HAL_UART_Receive_IT(&huart2, QtRxData, sizeof(QtRxData));
+		   if ( HAL_UART_Receive_IT(&huart2, QtRxData, sizeof(QtRxData)) != HAL_OK){
+			   Error_Handler();
+		   }
 		  CAN1_Tx();
 
 	  }
 
 }
 
- static void send_data_uart(uint8_t *data, uint8_t size) {
+ static void Send_Data_Uart(uint8_t *data, uint8_t size) {
 	   HAL_UART_Transmit(&huart2,  data, size, HAL_MAX_DELAY);
 	}
- void convert_uint8_to_uint16(uint8_t *input, uint16_t *output, size_t length) {
+ void Convert_Uint8_To_Uint16(uint8_t *input, uint16_t *output, size_t length) {
      for (size_t i = 0; i < length; i++) {
          output[i] = (uint16_t)input[i];
      }
