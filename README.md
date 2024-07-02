@@ -21,7 +21,10 @@ Node 2 is responsible for managing the climate conditions within the patient's r
 - **Temperature and Humidity Sensors**: Monitor the room's temperature and humidity levels in real-time.
 - **Climate Control Actuator**: Utilizes a motor to adjust the room's climate settings based on sensor data. It regulates devices like air conditioning units or heaters to maintain optimal conditions.
 - **Remote Control Capability**: Enables remote adjustment of room climate settings through the user interface (UI), providing convenience and flexibility for caregivers or medical staff.
-- 
+
 ![cablage_noeud2](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/ee03cabc-4341-47de-af49-904f0d78a382)
 
+## Central Node: Data Aggregation and Transmission
+The central node in this system acts as a pivotal point for consolidating data from all connected nodes, which include patient health monitoring and room climate control devices. It collects data from each node, stores it locally, and then transmits the aggregated data to the ThingSpeak cloud platform using a WiFi module for storage and analysis. Additionally, the central node interfaces with the user interface (UI) through a TTL adapter, enabling real-time data visualization and remote control of room climate settings.
 
+![cablage_noeud3](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/aade7457-7d60-4102-b773-7f30eee73b6d)
