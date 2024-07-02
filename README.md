@@ -11,7 +11,10 @@ Node 1 is designed for real-time monitoring of patient health parameters within 
 - **Temperature Sensor**: Monitors the patient's body temperature to ensure optimal health conditions.
 - **Heart Rate Sensor**: Tracks the patient's heart rate to monitor cardiovascular health.
 - **Emergency Button**: Allows the patient to quickly request assistance in case of emergencies. If pressed, alerts are triggered to notify caregivers or medical staff.
+- 
 ![cablage_noeud1](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/e325f542-e5ed-48d0-af3e-02d37a800a83)
+
+## Node 2: Room Climate Control
 
 Node 2 is responsible for managing the climate conditions within the patient's room, ensuring comfort and health.
 
