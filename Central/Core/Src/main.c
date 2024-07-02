@@ -59,7 +59,7 @@ UART_HandleTypeDef huart3;
  //////////paramétres CAN/////////
  uint32_t TxMailbox;
  CAN_RxHeaderTypeDef RxHeader;
- uint8_t FlagQtVentilateur = 0 ;
+
 
 /* USER CODE END PV */
 
