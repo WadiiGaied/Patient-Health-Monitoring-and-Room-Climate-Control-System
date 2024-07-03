@@ -33,3 +33,11 @@ The central node in this system acts as a pivotal point for consolidating data f
 Data transmitted from the central node in this system is securely stored on the ThingSpeak cloud platform. This setup ensures that all collected data, aggregated from various nodes including patient health monitoring and room climate control devices, is securely archived and readily accessible for analysis and monitoring purposes. ThingSpeak provides a reliable cloud-based storage solution that facilitates data management and enables seamless integration with analytics tools for comprehensive insights into monitored parameters.
 ![cloud](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/8acb038e-df8f-4edf-b922-37a61244c685)
 
+# Data Visualization on the HMI
+
+The Human-Machine Interface (HMI) in this system provides comprehensive data visualization capabilities for monitoring patient health and room climate control parameters. It allows users to verify the connectivity status of each node, visualize aggregated data, and access detailed patient information.
+- **Homepage** :The homepage of the HMI displays the connectivity status of  node central.
+
+![QT-1](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/9b917347-4a73-4da8-8e69-fca6e53a1b88)
+- **Room View** : Users can select a room (e.g., Room 1) to visualize detailed patient data, including temperature, heart rate, and emergency alerts if triggered.
+  ![QT-2](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/1aa56158-5eac-4201-a364-4ee0f7feb971)
