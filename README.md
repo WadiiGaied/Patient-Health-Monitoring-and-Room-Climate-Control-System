@@ -1,5 +1,6 @@
 ## Description
 This project focuses on real-time health monitoring for patients, where each patient's health data is monitored within their room. Data from each patient is collected and transmitted to a central card using a communication protocol(CAN BUS). Once collected at the central card, the data is sent to a cloud server for analysis and storage. Additionally, a user interface (GUI) has been developed to visualize patient data in case of cloud server downtime. As a future enhancement, remote control of room climate via the GUI is being considered
+
 ## Architecture Global
 
 ![architecture](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/05fd2b55-7483-4192-b1b0-fde3aa9b627a)
@@ -41,3 +42,5 @@ The Human-Machine Interface (HMI) in this system provides comprehensive data vis
 ![QT-1](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/9b917347-4a73-4da8-8e69-fca6e53a1b88)
 - **Room View** : Users can select a room (e.g., Room 1) to visualize detailed patient data, including temperature, heart rate, and emergency alerts if triggered.
   ![QT-2](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/1aa56158-5eac-4201-a364-4ee0f7feb971)
+## Final Project Photo
+![IMG_20240530_124608](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/92ed5bd3-9c87-464b-ac53-c0c9e6e6ad9d)
