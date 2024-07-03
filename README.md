@@ -44,3 +44,6 @@ The Human-Machine Interface (HMI) in this system provides comprehensive data vis
   ![QT-2](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/1aa56158-5eac-4201-a364-4ee0f7feb971)
 ## Final Project Photo
 ![IMG_20240530_124608](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/92ed5bd3-9c87-464b-ac53-c0c9e6e6ad9d)
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
