@@ -28,3 +28,8 @@ Node 2 is responsible for managing the climate conditions within the patient's r
 The central node in this system acts as a pivotal point for consolidating data from all connected nodes, which include patient health monitoring and room climate control devices. It collects data from each node, stores it locally, and then transmits the aggregated data to the ThingSpeak cloud platform using a WiFi module for storage and analysis. Additionally, the central node interfaces with the user interface (UI) through a TTL adapter, enabling real-time data visualization and remote control of room climate settings.
 
 ![cablage_noeud3](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/aade7457-7d60-4102-b773-7f30eee73b6d)
+# Data Memorization
+
+Data transmitted from the central node in this system is securely stored on the ThingSpeak cloud platform. This setup ensures that all collected data, aggregated from various nodes including patient health monitoring and room climate control devices, is securely archived and readily accessible for analysis and monitoring purposes. ThingSpeak provides a reliable cloud-based storage solution that facilitates data management and enables seamless integration with analytics tools for comprehensive insights into monitored parameters.
+![cloud](https://github.com/WadiiGaied/Patient-Health-Monitoring-and-Room-Climate-Control-System/assets/171201731/8acb038e-df8f-4edf-b922-37a61244c685)
+
